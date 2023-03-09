@@ -12,7 +12,7 @@ var array: [String] = []
 
 class SearchCityController: UIViewController {
     
-    @IBOutlet weak var TableView: UITableView!
+    @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var searchBar: UISearchBar!
     
     override func viewDidLoad() {
@@ -34,7 +34,7 @@ extension SearchCityController: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let cell = self.TableView.cellForRow(at: indexPath) as! UITableViewCell
+        let cell = self.tableView.cellForRow(at: indexPath) as! UITableViewCell
         let controller = self.storyboard?.instantiateViewController(withIdentifier: "Main") as? WeatherMainViewController
         if let controller = controller {
             controller.city = cell.textLabel?.text
@@ -53,7 +53,7 @@ extension SearchCityController: UISearchBarDelegate {
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
         if let appendedCity = searchBar.text {
             push(appendedCity)
-            TableView.reloadData()
+            tableView.reloadData()
         }
     }
 }
