@@ -1,9 +1,8 @@
 //
-//  SearchCityController.swift
-//  SimpleWeather
+//  FiAssignmentWeatherAppApp.swift
+//  FiAssignmentWeatherApp
 //
 //  Created by Pratyush Jha on 08/03/23.
-//  Copyright © 2023 Joey deVilla. All rights reserved.
 //
 
 import UIKit
