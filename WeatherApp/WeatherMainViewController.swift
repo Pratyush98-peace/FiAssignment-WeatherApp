@@ -67,10 +67,7 @@ class WeatherMainViewController: UIViewController, WeatherGetterDelegate {
     }
     
     func didGetCity(city: String?) {
-        guard let text = city, !text.isEmpty else {
-            return
-            
-        }
+        guard let text = city, !text.isEmpty else { return }
         weather.getWeather(city: text)
     }
     
@@ -86,8 +83,6 @@ class WeatherMainViewController: UIViewController, WeatherGetterDelegate {
                 weather.getWeather(city: "Nagpur")
                 return
             }
-            print(currentLocation.coordinate.latitude)
-            print(currentLocation.coordinate.longitude)
             weather.getCurrentCity(latitude: currentLocation.coordinate.latitude, longitude: currentLocation.coordinate.longitude)
         } else {
             weather.getWeather(city: "Nagpur")

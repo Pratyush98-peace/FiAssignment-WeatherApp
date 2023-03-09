@@ -24,21 +24,14 @@ class WeatherGetter {
     func getCurrentCity(latitude: Double, longitude: Double) {
         var url = "http://dataservice.accuweather.com/locations/v1/cities/geoposition/search"
         url = url + "?apikey=fXfnxixtabzeypoj42GispgxYbck2tV2&q=\(latitude),\(longitude)"
-        print(url)
         let request = URLRequest(url: URL(string: url)!)
         let dataTask = URLSession.shared.dataTask(with: request) {
             (data, response, error) in
             guard let data = data,
                   let jsonData = try? JSONSerialization.jsonObject(with: data, options: .mutableContainers) as? [String: Any],
-                  error == nil else {
-               
-                return
-            }
+                  error == nil else { return }
             let cityName = jsonData["LocalizedName"] as? String
-            guard let cityName = cityName else {
-                return
-                
-            }
+            guard let cityName = cityName else { return }
             self.getWeather(city: cityName)
         }
         dataTask.resume()
@@ -95,11 +88,6 @@ class WeatherGetter {
 public extension JSONDecoder {
     func decode<T>(_ type: T.Type, from jsonDictionary: [String: Any]) throws -> T where T: Decodable {
         let jsonData = try JSONSerialization.data(withJSONObject: jsonDictionary, options: [])
-        return try decode(type, from: jsonData)
-    }
-    
-    func decode<T>(_ type: T.Type, from jsonDictionaryArray: [[String: Any]]) throws -> T where T: Decodable {
-        let jsonData = try JSONSerialization.data(withJSONObject: jsonDictionaryArray, options: [])
         return try decode(type, from: jsonData)
     }
 }

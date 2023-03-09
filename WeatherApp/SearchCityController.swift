@@ -12,7 +12,7 @@ var array: [String] = []
 
 class SearchCityController: UIViewController {
     
-    @IBOutlet weak var TableView: UITableView!
+    @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var searchBar: UISearchBar!
     
     override func viewDidLoad() {
@@ -21,19 +21,20 @@ class SearchCityController: UIViewController {
 }
 
 extension SearchCityController: UITableViewDelegate, UITableViewDataSource {
+    
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return array.count
         
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = TableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
+        let cell = tableView.dequeueReusableCell(withIdentifier: "tableViewCell", for: indexPath)
         cell.textLabel?.text = array[indexPath.row]
         return cell
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let cell = self.TableView.cellForRow(at: indexPath) as! UITableViewCell
+        let cell = self.tableView.cellForRow(at: indexPath) as! UITableViewCell
         let controller = self.storyboard?.instantiateViewController(withIdentifier: "Main") as? WeatherMainViewController
         if let controller = controller {
             controller.city = cell.textLabel?.text
@@ -52,7 +53,7 @@ extension SearchCityController: UISearchBarDelegate {
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
         if let appendedCity = searchBar.text {
             push(appendedCity)
-            TableView.reloadData()
+            tableView.reloadData()
         }
     }
 }
