@@ -12,34 +12,62 @@ struct WeatherDetail {
     var minTemp: Double
     var maxTemp: Double
     var epochTime: Double
-    var WeatherText: String
+    var weatherText: String
 }
 
-struct FetchCity: Codable {
-    var LocalizedName: String
+struct FetchCity: Decodable {
+    var localizedName: String
+    
+    enum CodingKeys: String, CodingKey {
+        case localizedName = "LocalizedName"
+    }
 }
 
-struct Weather: Codable {
-    let Headline: headline
-    let DailyForecasts: [dailyForecasts]
+struct Weather: Decodable {
+    let headline: Headlines
+    let dailyForecasts: [DailyForecast]
+    
+    enum CodingKeys: String, CodingKey {
+        case headline = "Headline"
+        case dailyForecasts = "DailyForecasts"
+    }
 }
 
-struct headline: Codable {
-    let EffectiveEpochDate: Double
-    let Text: String
+struct Headlines: Decodable {
+    let effectiveEpochDate: Double
+    let text: String
+    
+    enum CodingKeys: String, CodingKey {
+        case effectiveEpochDate = "EffectiveEpochDate"
+        case text = "Text"
+    }
 }
 
-struct dailyForecasts: Codable {
-    let Temperature: TemperatureData
+struct DailyForecast: Decodable {
+    let temperature: TemperatureData
+    
+    enum CodingKeys: String, CodingKey {
+        case temperature = "Temperature"
+    }
 }
 
-struct TemperatureData: Codable {
-    let Minimum: TempDetails
-    let Maximum: TempDetails
+struct TemperatureData: Decodable {
+    let minimum: TempDetails
+    let maximum: TempDetails
+    
+    enum CodingKeys: String, CodingKey {
+        case minimum = "Minimum"
+        case maximum = "Maximum"
+    }
 }
 
-struct TempDetails: Codable {
-    let Value: Double
-    let Unit: String
+struct TempDetails: Decodable {
+    let value: Double
+    let unit: String
+    
+    enum CodingKeys: String, CodingKey {
+        case value = "Value"
+        case unit = "Unit"
+    }
 }
   

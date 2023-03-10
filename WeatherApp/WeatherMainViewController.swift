@@ -8,52 +8,45 @@
 import UIKit
 import MapKit
 
-class WeatherMainViewController: UIViewController, WeatherGetterDelegate {
+protocol GetCityProtocol: AnyObject {
+    func getCity(cityDetail: String)
+}
+
+final class WeatherMainViewController: UIViewController, WeatherGetterDelegate {
     
-    @IBOutlet weak var cityLabel: UILabel!
-    @IBOutlet weak var weatherLabel: UILabel!
-    @IBOutlet weak var maxTemp: UILabel!
-    @IBOutlet weak var minTemp: UILabel!
-    @IBOutlet weak var epochLabel: UILabel!
-    @IBOutlet weak var weatherText: UILabel!
-    @IBOutlet weak var getCityWeatherButton: UIButton!
+    @IBOutlet private weak var cityLabel: UILabel!
+    @IBOutlet private weak var weatherLabel: UILabel!
+    @IBOutlet private weak var maxTemp: UILabel!
+    @IBOutlet private weak var minTemp: UILabel!
+    @IBOutlet private weak var epochLabel: UILabel!
+    @IBOutlet private weak var weatherText: UILabel!
+    @IBOutlet private weak var getCityWeatherButton: UIButton!
     
-    var locManager = CLLocationManager()
-    var currentLocation: CLLocation!
+    private var locManager = CLLocationManager()
+    private var currentLocation: CLLocation!
     
-    var city: String?
-    var weather: WeatherGetter!
+    private var city: String?
+    private lazy var weather: WeatherGetter = WeatherGetter(delegate: self)
+    private var defaultCity: String = "Nagpur"
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        weather = WeatherGetter(delegate: self)
         getLayout()
     }
     
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-    }
-    
-    @IBAction func getWeatherForCityButtonTapped(_ sender: Any) {
+    @IBAction private func getWeatherForCityButtonTapped(_ sender: Any) {
         let story = UIStoryboard(name: "Main", bundle: nil)
-        let controller = story.instantiateViewController(withIdentifier: "SearchCityIdentifier") as! SearchCityController
+        let controller = story.instantiateViewController(withIdentifier: "SearchCityIdentifier") as? SearchCityController
+        guard let controller = controller else { return }
+        controller.delegate = self
         self.present(controller,animated: true, completion: nil)
         self.modalPresentationStyle = .fullScreen
     }
     
-    func getLayout() {
+    private func getLayout() {
         cityLabel.text = "simple weather"
-        weatherLabel.text = ""
-        maxTemp.text = ""
-        minTemp.text = ""
-        epochLabel.text = ""
-        weatherText.text = ""
         getCityWeatherButton.isEnabled = true
-        if let city = city {
-            weather.getWeather(city: city)
-        } else {
-            getCurrentLocationData()
-        }
+        getCurrentLocationData()
     }
     
     func didGetWeather(weather: WeatherDetail) {
@@ -62,31 +55,32 @@ class WeatherMainViewController: UIViewController, WeatherGetterDelegate {
             self.maxTemp.text = String(weather.maxTemp)
             self.minTemp.text = String(weather.minTemp)
             self.epochLabel.text = String(weather.epochTime)
-            self.weatherText.text = weather.WeatherText
+            self.weatherText.text = weather.weatherText
         }
     }
     
-    func didGetCity(city: String?) {
-        guard let text = city, !text.isEmpty else { return }
-        weather.getWeather(city: text)
-    }
-    
     func didNotGetWeather() {
-        weather.getWeather(city: "Nagpur")
+        weather.getWeather(city: defaultCity)
     }
     
-    func getCurrentLocationData() {
+    private func getCurrentLocationData() {
         locManager.requestWhenInUseAuthorization()
         if (CLLocationManager.authorizationStatus() == CLAuthorizationStatus.authorizedWhenInUse ||
             CLLocationManager.authorizationStatus() == CLAuthorizationStatus.authorizedAlways){
             guard let currentLocation = locManager.location else {
-                weather.getWeather(city: "Nagpur")
+                weather.getWeather(city: defaultCity)
                 return
             }
             weather.getCurrentCity(latitude: currentLocation.coordinate.latitude, longitude: currentLocation.coordinate.longitude)
         } else {
-            weather.getWeather(city: "Nagpur")
+            weather.getWeather(city: defaultCity)
         }
+    }
+}
+
+extension WeatherMainViewController: GetCityProtocol {
+    func getCity(cityDetail: String) {
+        weather.getWeather(city: cityDetail)
     }
 }
 

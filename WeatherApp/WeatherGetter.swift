@@ -12,7 +12,7 @@ protocol WeatherGetterDelegate {
     func didNotGetWeather()
 }
 
-class WeatherGetter {
+final class WeatherGetter {
     
     private let openWeatherMapAPIKey = "CcG4cAeMDmabt6HdAk2aISlupqyfvdgB"
     private var delegate: WeatherGetterDelegate
@@ -70,15 +70,13 @@ class WeatherGetter {
             (data, response, error) in
             guard let data = data,
                   let jsonData = try? JSONSerialization.jsonObject(with: data, options: .mutableContainers) as? [String: Any],
-                  error == nil else {
-                return
-            }
-            let weatherDetails = try? JSONDecoder().decode(Weather.self, from: jsonData)
-            let minTemp = weatherDetails?.DailyForecasts[0].Temperature.Minimum.Value
-            let maxTemp = weatherDetails?.DailyForecasts[0].Temperature.Maximum.Value
-            let epoch = weatherDetails?.Headline.EffectiveEpochDate
-            let weatherText = weatherDetails?.Headline.Text
-            let weather = WeatherDetail(city: city, minTemp: minTemp ?? 0, maxTemp: maxTemp ?? 0, epochTime: epoch ?? 0, WeatherText: weatherText ?? "")
+                  error == nil else { return }
+            guard let weatherDetails = try? JSONDecoder().decode(Weather.self, from: jsonData) else { return }
+            let minTemp = weatherDetails.dailyForecasts.first?.temperature.minimum.value ?? 0
+            let maxTemp = weatherDetails.dailyForecasts.first?.temperature.maximum.value ?? 0
+            let epoch = weatherDetails.headline.effectiveEpochDate
+            let weatherText = weatherDetails.headline.text
+            let weather = WeatherDetail(city: city, minTemp: minTemp, maxTemp: maxTemp, epochTime: epoch, weatherText: weatherText)
             self.delegate.didGetWeather(weather: weather)
         }
         dataTask.resume()

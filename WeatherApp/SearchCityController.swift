@@ -7,12 +7,12 @@
 
 import UIKit
 
-var array: [String] = []
-
-class SearchCityController: UIViewController {
+final class SearchCityController: UIViewController {
     
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var searchBar: UISearchBar!
+    
+    weak var delegate: GetCityProtocol?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -22,24 +22,21 @@ class SearchCityController: UIViewController {
 extension SearchCityController: UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return array.count
-        
+        CityData.shared.storeCity.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "tableViewCell", for: indexPath)
-        cell.textLabel?.text = array[indexPath.row]
+        cell.textLabel?.text = CityData.shared.storeCity[indexPath.row]
         return cell
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let cell = self.tableView.cellForRow(at: indexPath) as! UITableViewCell
-        let controller = self.storyboard?.instantiateViewController(withIdentifier: "Main") as? WeatherMainViewController
-        if let controller = controller {
-            controller.city = cell.textLabel?.text
-            self.present(controller,animated: true, completion: nil)
-            self.modalPresentationStyle = .fullScreen
-        } 
+        let cell = self.tableView.cellForRow(at: indexPath)
+        guard let cell = cell else { return }
+        self.dismiss(animated: false)
+        guard let cityName = cell.textLabel, let cityText = cityName.text  else { return }
+        self.delegate?.getCity(cityDetail: cityText)
     }
 }
 
@@ -51,22 +48,9 @@ extension SearchCityController: UISearchBarDelegate {
     
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
         if let appendedCity = searchBar.text {
-            push(appendedCity)
+            CityData.shared.operationInStoreCity(city: appendedCity)
             tableView.reloadData()
         }
     }
 }
 
-extension SearchCityController {
-    
-    func push(_ item: String) {
-        if array.count == 5 {
-            pop()
-        }
-      array.append(item)
-    }
-    
-    func pop() -> String? {
-       array.removeFirst()
-    }
-}
